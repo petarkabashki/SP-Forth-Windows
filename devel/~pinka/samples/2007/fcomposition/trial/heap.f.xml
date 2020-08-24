@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="Windows-1251"?>
+<forth xmlns="http://forth.org.ru/ForthML/">
+
+<tc:import xmlns:tc="http://forth.org.ru/ForthML/TC/">
+
+ ALLOCATE RESIZE FREE
+
+ ALLOCATED
+
+</tc:import>
+
+
+
+<comment>
+  
+  Здесь еще хотелось бы пару ( addr -- ) к ALLOCATED ( u -- addr u )
+
+  <def name="{what-name?}" ds=" addr -- "> FREE THROW </def>
+
+</comment>
+
+</forth>

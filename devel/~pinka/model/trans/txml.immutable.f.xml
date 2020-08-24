@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="ASCII" ?>
+<forth xmlns="http://forth.org.ru/ForthML/">
+<!-- Feb.2007 ruvim@forth.org.ru -->
+
+<def name="name-n-uri" ds=" qname-a qname-u -- name-a name-u uri-a uri-u ">
+  `: SPLIT- 0= <if> 2DUP `# STARTS-WITH <if> 0 0 <exit/></if> 0 0 </if>  Namespace-uri-for-prefix
+</def>
+
+<def name="trans-childs" ds=" i*x -- j*x ">
+  cnode >R
+  FirstChild <repeat> cnode <while/> trans-node-force NextSibling </repeat>
+  R> cnode!
+</def>
+
+<def name="trans-document" ds=" doc -- ">
+  cnode >R documentElement cnode! trans-node-force R> cnode!
+</def>
+
+<def name="expanded-url" ds=" a1 u1 -- a2 u2 ">
+  2DUP `/ SPLIT- <if> `: CONTAINS <if> 2DROP <exit/></if></if> 2DROP
+  cnode-based-url
+</def>
+
+<def name="(embody-doc)" ds=" i*x base-url-a base-url-u doc -- j*x ">
+  push-document
+  document-id trans-document
+  drop-document
+</def>
+
+<def name="embody-doc" ds=" i*x basedoc-url-a basedoc-url-u doc -- j*x ">
+  _cs_txml ENTER-CS
+  <xt-of name="(embody-doc)"/> CATCH
+  _cs_txml LEAVE-CS            THROW
+</def>
+
+<def name="EMBODY" ds=" i*x url-a url-u -- j*x ">
+  2DUP translate-uri DefaultLSParser parseURI DUP 0= <if> -5003 THROW </if>
+  DUP >R
+  embody-doc
+  R> DefaultLSParser freeDoc
+</def>
+
+<def name="Embody" ds=" i*x url-a url-u -- j*x "><!-- takes into account baseURI of current node -->
+  expanded-url EMBODY
+</def>
+
+</forth>

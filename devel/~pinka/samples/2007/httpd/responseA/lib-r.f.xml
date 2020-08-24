@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="ASCII"?>
+<forth xmlns="http://forth.org.ru/ForthML/">
+
+<also wordlist="XMLDOM-WL">
+<also wordlist="forthml-hidden"><definitions>
+
+
+<def name="treat-text-element" ds=" -- | a u ">
+  FirstChildValue T-SLIT
+</def>
+
+<def name="treat-text-node" ds=" -- | a u ">
+  NodeValue T-SLIT
+</def>
+
+<def name="?rule1" ds=" -- ">
+  M @ <unless> `#not-M STHROW </unless>
+  STATE? 1 EQ <unless> `#not-STATE1 STHROW </unless>
+</def>
+
+<def name="?S0" ds=" -- ">
+  STATE0? <unless> `#not-STATE0 STHROW </unless>
+</def>
+
+
+
+
+<f:g
+ xmlns:f="http://forth.org.ru/ForthML/"
+ xmlns:r="http://forth.org.ru/ForthML/Rules/"
+   xmlns="http://forth.org.ru/ForthML/Rules/"
+>
+
+<rule match="r:expand" ds=" -- ">  ?S0
+  <exec-attribute name="transform"/><f:rem>( id )</f:rem>
+  chain-current @ >R chain-current !
+  <yield/>
+  R> chain-current !
+</rule>
+
+<rule match="r:import-context" ds=" -- "> ?S0
+  chain-context @ import-rules
+</rule>
+
+<rule match="r:develop" ds=" -- "> ?S0
+  <exec-attribute name="transform"/><f:rem>( id )</f:rem>
+  chain-context @ chain-current @ 2>R
+  DUP chain-current ! chain-context !
+  <yield/>
+  2R> chain-current ! chain-context !
+</rule>
+
+</f:g>
+
+
+</definitions>
+</also></also>
+</forth>

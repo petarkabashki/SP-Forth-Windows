@@ -1,0 +1,37 @@
+REGEDIT4
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\spf.exe]
+@="{path}"
+
+[HKEY_CLASSES_ROOT\.spf]
+@="spf"
+"Content Type"="text/plain"
+
+[HKEY_CLASSES_ROOT\.f]
+@="spf"
+"Content Type"="text/plain"
+
+[HKEY_CLASSES_ROOT\spf]
+@="Forth File"
+
+[HKEY_CLASSES_ROOT\spf\DefaultIcon]
+@="{path},0"
+
+[HKEY_CLASSES_ROOT\spf\Shell]
+
+[HKEY_CLASSES_ROOT\spf\Shell\Open]
+
+[HKEY_CLASSES_ROOT\spf\Shell\Open\Command]
+@="\"{path}\" S\" %1\" INCLUDED"
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\W3SVC\Parameters\Script Map]
+".spf"="\"{path}\" S\" %s\" INCLUDED"
+[HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services\W3SVC\Parameters\Script Map]
+".spf"="\"{path}\" S\" %s\" INCLUDED"
+
+[HKEY_CURRENT_USER\SOFTWARE\Far\Associations\{TypeN}]
+"Description"="sp-forth files"
+"Edit"=""
+"Execute"="\"{path}\" S\" !.!\" INCLUDED"
+"Mask"="*.f,*.spf"
+"View"=""

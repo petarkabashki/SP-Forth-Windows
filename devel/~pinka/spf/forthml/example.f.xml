@@ -1,0 +1,84 @@
+<?xml version="1.0" ?>
+<forth xmlns="http://forth.org.ru/ForthML/">
+<!-- run with:
+REQUIRE EMBODY ~pinka/spf/forthml/index.f
+`example.f.xml EMBODY 
+-->
+
+10 <repeat> DUP <while/> DUP . 1- </repeat> DROP CR
+
+<def name="qqq" ds=" -- ">
+  10 <until> DUP . 1-  DUP 0LT </until> DROP CR
+</def>
+
+qqq
+
+<def name="even?" ds=" n -- ">
+  DUP . `is TYPE SPACE
+  <choose> 2 MOD 0= <when> `even </when> `odd </choose> TYPE CR
+</def>
+
+20 even?
+
+<def name="steps" ds=" n -- ">
+  DUP 0= <if> DROP <exit/></if> DUP . 1- <again/>
+</def>
+
+<def name="quote-the-5steps" ds=" -- xt "><!-- quotation -->
+  <q> 5 steps CR </q>
+</def>
+
+quote-the-5steps EXECUTE
+
+<q> 5 steps CR </q> EXECUTE
+
+
+<emit-line>--- closure: </emit-line>
+
+ 3 7 <p><p><lit/> * </p></p> OK EXECUTE OK EXECUTE . CR
+
+
+<def name="make-zzz" ds=" -- ">
+  <def name="zzz" ds=" -- ">
+    <emit-line>test passed</emit-line>
+  </def>
+</def><!-- try make-zzz and then  zzz -->
+
+
+
+<wordlist name="mnames">
+ ORDER
+ `A 5 <times ds=" a u -- a u">
+  
+    <def name="word-{ 2DUP }--"><slit> 2DUP </slit> TYPE <emit> ok </emit> </def>
+    OVER 1+!
+
+  </times> 2DROP
+
+  WORDS  word-A-- CR CR
+</wordlist>
+
+
+<also wordlist="forthml-hidden">
+
+<r:rule match="A" xmlns:r="http://forth.org.ru/ForthML/Rules/">
+  `A_ TYPE SPACE
+  <r:for-each select="B">
+    `B_ TYPE SPACE
+       FirstChildValue TYPE SPACE
+    `_B TYPE SPACE
+  </r:for-each>
+  `_A TYPE SPACE
+</r:rule>
+
+</also>
+
+<A> <B>111</B> <any> <other/> </any> <B>222</B> <elements/> </A>
+
+<!-- output:
+A_ B_ 111 _B B_ 222 _B _A
+-->
+
+OK
+
+</forth>

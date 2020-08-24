@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="ASCII"?>
+<forth xmlns="http://forth.org.ru/ForthML/"
+     xmlns:f="http://forth.org.ru/ForthML/"
+     xmlns:r="http://forth.org.ru/ForthML/Rules/"
+>
+
+<const name="_cs_log"> ALIGN HERE MAKE-CS, </const>
+
+<def name="log" ds=" a u -- ">
+  _cs_log ENTER-CS
+    THREAD-ID . TYPE CR
+  _cs_log LEAVE-CS
+</def>
+<def name="logN" ds=" x a u -- ">
+  _cs_log ENTER-CS
+    THREAD-ID . TYPE `: TYPE SPACE . CR
+  _cs_log LEAVE-CS
+</def>
+<def name="logS" ds=" a2 u2  a u -- ">
+  _cs_log ENTER-CS
+    THREAD-ID . TYPE `: TYPE SPACE TYPE CR
+  _cs_log LEAVE-CS
+</def>
+ 
+<also wordlist="forthml-hidden">
+
+<r:rule match="f:log">
+  FirstChildValue T-SLIT <r:m>log</r:m>
+</r:rule>
+
+<r:rule match="f:logN">
+  FirstChildValue T-SLIT <r:m>logN</r:m>
+</r:rule>
+
+<r:rule match="f:logS">
+  FirstChildValue T-SLIT <r:m>logS</r:m>
+</r:rule>
+
+</also>
+
+
+<comment><rem>example</rem>
+
+       <log>one message</log>
+  123 <logN>the number</logN>
+  `ab <logS>the string</logS>
+
+</comment>
+
+</forth>

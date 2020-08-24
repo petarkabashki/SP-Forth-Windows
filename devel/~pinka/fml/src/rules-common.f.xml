@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="ASCII" ?>
+<f:forth
+  xmlns="http://forth.org.ru/ForthML/Rules/"
+  xmlns:f="http://forth.org.ru/ForthML/"
+  f:nskeep="yes"
+><!-- to default r:transform -->
+
+<!-- Feb.2007 ruvim@forth.org.ru 
+$Id: rules-common.f.xml,v 1.10 2008/08/09 22:52:14 ruv Exp $
+-->
+
+<rule match="f:rem" />
+<rule match="f:comment" />
+<rule match="f:g"><yield/></rule><!-- merely group -->
+<!--
+<rule match="f:model"><yield/></rule>-->
+
+<rule match="f:p">
+  <m>CONCEIVE <postpone><yield/></postpone> BIRTH</m>
+</rule>
+
+<rule match="f:def">
+  <m><get-name/> 2>CS CONCEIVE <postpone><yield/></postpone> BIRTH 2CS> NAMING-</m>
+</rule>
+
+<rule match="f:lit">
+  <m><direct><yield/>LIT,</direct></m>
+</rule>
+<rule match="f:lit2">
+  <m><direct><yield/>2LIT,</direct></m>
+</rule>
+<rule match="f:slit">
+  <m><direct><yield/>SLIT,</direct></m>
+</rule>
+<rule match="f:exec">
+  <m><direct><yield/>EXEC,</direct></m>
+</rule>
+
+<rule match="f:exit">
+  <m><direct>EXIT,</direct></m>
+</rule>
+<rule match="f:recurse">
+  <m><direct>GERM EXEC,</direct></m>
+</rule>
+<rule match="f:again">
+  <m><direct>GERM >CS BBW,</direct></m><!-- depend on.. -->
+</rule>
+
+
+<rule match="f:otherwise">
+  <yield/>
+</rule>
+
+<rule match="f:when"><m>
+  <direct>ZBFW,</direct>
+  <yield/>
+  <direct>BFW2, RFW</direct>
+  </m>
+</rule>
+
+<rule match="f:choose"><m>
+  <yield/><for-each select="f:when"><direct>RFW</direct></for-each>
+  </m>
+</rule>
+
+<rule match="f:while">
+  <m><direct>ZBFW2,</direct></m>
+</rule>
+
+<rule match="f:repeat"><m>
+  <direct>MBW</direct>
+  <yield/>
+  <direct>BBW,</direct>
+  <for-each select="f:while"><direct>RFW</direct></for-each>
+  </m>
+</rule>
+
+<rule match="f:until"><m>
+  <direct>MBW</direct>
+  <yield/>
+  <direct>ZBBW,</direct>
+  <for-each select="f:while"><direct>RFW</direct></for-each>
+  </m>
+</rule>
+
+<rule match="f:if"><m>
+  <direct>ZBFW,</direct>
+  <yield/>
+  <direct>RFW</direct>
+  </m>
+</rule>
+
+<rule match="f:unless"><m>
+  <direct>NZBFW,</direct>
+  <yield/>
+  <direct>RFW</direct>
+  </m>
+</rule>
+
+
+<rule match="f:cell"><m>
+  <get-name/> 2>CS
+  SP@ >CS <yield/><!--( x| )--> SP@ CS> EQ ?DUP XOR <!--( x|0 )-->
+  ALIGN HERE SWAP , CONCEIVE LIT, BIRTH
+  2CS> NAMING-
+  </m>
+</rule>
+
+<rule match="f:const"><m>
+  <get-name/> 2>CS
+  <yield/> CONCEIVE LIT, BIRTH
+  2CS> NAMING-
+  </m>
+</rule>
+
+
+<rule match="f:wordlist"><m>
+  <get-name/> WORDLIST-NAMED PUSH-DEVELOP <yield/> DROP-DEVELOP
+  </m>
+</rule>
+
+<rule match="f:export"><m><!-- child of f:wordlist only -->
+  BEGIN-EXPORT <yield/> END-EXPORT
+  </m>
+</rule>
+
+</f:forth>

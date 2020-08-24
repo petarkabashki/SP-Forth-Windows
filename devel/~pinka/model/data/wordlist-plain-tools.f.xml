@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<forth xmlns="http://forth.org.ru/ForthML/">
+
+<def name="COPY-WORDLIST-NODE" ds=" node1 -- node2 ">
+  0 , HERE SWAP <!-- link -->
+  DUP @ , CELL+ @ , <!-- [ x key-addr ] -->
+</def>
+
+<def name="APPENDED-WORDLIST-NODE-" ds=" node2 node1 -- node3 ">
+  COPY-WORDLIST-NODE TIED-
+</def>
+
+<def name="APPEND-WORDLIST" ds=" h-list2 h-list -- "><rem> it saves order </rem>
+  SWAP @  0 >R  
+  <repeat> DUP <while/> DUP >R CDR </repeat> DROP
+  DUP @
+  <repeat> R> DUP <while/> APPENDED-WORDLIST-NODE- </repeat> DROP  SWAP !
+</def>
+
+<def name="NLIST" ds=" wid -- ">
+  CR 0 SWAP 0 >R  @
+  <repeat> DUP <while/> SWAP 1+ SWAP  DUP NODE-NAME
+    DUP R> + DUP 74 UGT <if> DROP DUP CR </if>  >R
+    TYPE  15 R@ 15 MOD - DUP RP@ +! SPACES
+    CDR
+  </repeat> DROP RDROP
+  CR CR <text>Words: </text> TYPE U. CR
+</def>
+
+
+<comment><!-- m.b. -->
+<def name="(FOREACH-WORDLIST)" ds=" xt node -- xt " >
+  SWAP >R DUP @ SWAP NODE-NAME R@ EXECUTE R>
+</def>
+<def name="FOREACH-WORDLIST" ds=" xt wid -- "><rem> xt ( xt1 a1 u1 -- ) </rem>
+  <xt-of name="(FOREACH-WORDLIST)"/> SWAP FOREACH-LIST-NODE DROP
+</def>
+<def name="FOREACH-WORDLIST-REV" ds=" xt wid -- "><rem> xt ( xt1 a1 u1 -- ) </rem>
+  ABORT <!-- will be provided -->
+</def>
+</comment>
+
+</forth>

@@ -1,0 +1,6 @@
+/* $Id: some.css,v 1.4 2008/11/28 08:49:38 ygreks Exp $ */
+span.word {font-weight: bold}
+span.stack {font-family: courier}
+span.source {color: #888}
+span.source a {color: #888; text-decoration: none}
+span.source a:hover {color: #00F}

@@ -1,0 +1,3 @@
+\ переименовано в hash-table.f
+\ этот файл временный...
+~pinka\lib\hash-table.f

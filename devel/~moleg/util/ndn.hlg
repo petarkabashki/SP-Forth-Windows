@@ -1,0 +1,118 @@
+раскраска исходных текстов в редакторе NDN (ndn.muxe.com)
+
+FILES *.f;*.voc;*.spf;*.wrd;*.trg;
+   GeneralFLAGS 31
+   STRINGFLAGS 96
+
+; структуры управления
+   RegKeywords Color lightmagenta (^|\s+)(ALSO|ONLY|only|PREVIOUS|DEFINITIONS)(?=\s|$)
+   RegKeywords Color lightmagenta (^|\s+)(GET-ORDER|SET-ORDER|GET-CURRENT|SET-CURRENT)(?=\s|$)
+   RegKeywords Color lightmagenta (^|\s+)(RECENT|SEAL|UNDER|WITH|THIS)(?=\s|$)
+   RegKeywords Color lightmagenta (^|\s+)(ROOT|FORTH|ASSEMBLER|NUMBERS|HEAP)(?=\s|$)
+
+; конструкции управления
+   RegKeywords Color White (^|\s+)(\;SWITCH|SWITCH\:)(?=\s|$)
+   RegKeywords Color White (^|\s+)(NOW|FOR|TILL|SINCE|NEXT)(?=\s|$)
+   RegKeywords Color White (^|\s+)(BEGIN|WHILENOT|WHILE|REPEAT|UNTIL|AGAIN)(?=\s|$)
+   RegKeywords Color White (^|\s+)(IFNOT|IF|ELSE|THEN)(?=\s|$)
+   RegKeywords Color White (^|\s+)(DO|LOOP|\?DO|\+LOOP)(?=\s|$)
+   RegKeywords Color White (^|\s+)(CASE|OF|uOF|ENDOF|ENDCASE)(?=\s|$)
+   RegKeywords Color White (^|\s+)RECURSE(?=\s|$)
+
+   RegKeyWords Color yellow/red (^|\s+)\\EOF.*(?=\s+|$)
+   RegKeyWords Color yellow/blue \\\?[\13-¤]*
+
+   RegKeywords ColoR CYAN (^|\s+)\\(?=\s+|$)[\13-¤]*
+; строки
+   RegKeywords Color green/lightgray \.\"\s[\s-!#-¤]*\"(?=\s+|$)
+   RegKeywords Color green (^|\s+)(S|s|)\"\s[\s-!#-¤]*\"(?=\s+|$)
+
+   RegKeyWords Color green (^|\s+)(cp|os|vm)\\\s+[!-¤]+(?=\s|$)
+
+; числа:
+   RegKeyWords Color lightgreen [0-9]*\.[0-9]+,(\s|^)+-?[0-9]+(?=\s|$)
+   RegKeyWords Color lightgreen (\s+|^)+0x[0-9A-F]+(?=\s|$)
+
+; R/W R/O W/O
+   RegKeyWords Color lightgreen (\s+|^)(R|W)/(O|W)(?=\s|$)
+; base constants
+   RegKeyWords Color lightgreen (\s+|^)(CELL|ADDR|BYTE|CELLS|CHARS|TRUE|FALSE)(?=\s|$)
+   RegKeyWords Color lightgreen (\s+|^)(off_[!-¤]+|\/[!-¤]+|to_[!-¤]+|\&[!-¤]+)(?=\s|$)
+   RegKeyWords Color lightgreen (\s+|^)(S0|R0|BL|comma|point|imm_word|std_word)(?=\s|$)
+
+   RegKeyWords Color lightgreen (\s+|^)(COMPILE|\[COMPILE\]|\[\'\])\s+[!-¤]+(?=\s|$)
+   RegKeyWords Color lightgreen \sLITERAL(?=\s|$),\s2LITERAL(?=\s|$),\sDLITERAL(?=\s|$)
+   RegKeyWords Color lightgreen (\s|^)+\[CHAR\]\s+[!-¤]+,t\'\s+[!-¤]+
+   RegKeyWords Color lightgreen CHAR\"\s+[!-¤]+,CFL\s+
+   RegKeyWords Color lightgreen \s*\.\\[!-¤]+,REQUIRE\s+[!-¤]*\s+[!-¤]*,C\/L\s+
+   RegKeyWords Color lightgreen (\s|^)+NewLine(?=\s|$)
+   RegKeyWords Color lightgreen \sPOSTPONE\s+[!-¤]+,\s\[COMPILE\]\s+[!-¤]+
+; работа со стеком возвратов
+   RegKeywords Color LIGHTRED (^|\s+)(AR\x2B|R\x2B|AR>|>AR|AR\@|ARDROP)(?=\s|$)
+   RegKeywords Color LIGHTRED (^|\s+)(DR@|2R@|R@|DR>|2R>|R>|RDROP)(?=\s|$)
+   RegKeywords Color LIGHTRED (^|\s+)(D>R|2>R|>R|N>R|NR>)(?=\s|$)
+
+   RegKeywords Color LIGHTRED (^|\s+)(execute|tEXECUTE|PERFORM|CATCH|SP\!|RP\!)(?=\s|$)
+   RegKeyWords Color LIGHTRED (\s+|^)(THROW|UNLOOP|LEAVE|SERROR|BYE|WARNING|STATE)(?=\s|$)
+   RegKeyWords Color LIGHTRED (\s+|^)(IMMEDIATE|tIMMEDIATE|EXECUTE|unfeasible)(?=\s|$)
+
+   RegKeywords Color LIGHTRED (^|\s+)'(?=\s|$),(\s+|^)\[[!-¤]*\](?=\s|$)
+   RegKeyWords Color LIGHTRED (\s+|^)ABORT\"\s+.+\"(?=\s|$)
+
+   RegKeyWords Color LIGHTRED (\s+|^)(DECIMAL|HEX|BASE)(?=\s|$)
+
+; форматное приобразование чисел
+   RegKeywords Color lightblue (^|\s)+(HOLDS|HOLD|KEEPS|KEEP|BLANKS|BLANK|SIGN)(?=\s|$)
+   RegKeywords Color lightblue (^|\s)+(<#|#>|\{#|#\}|<\||\|>|#S|#|\$|\$S)(?=\s|$)
+
+   RegKeywords Color blue \(\s[\20-(*-¤]*\)(?=\s|$)
+
+   RegKeyWords Color RED/lightgray (\s+|^)(\?DEFINED|N\?DEFINED)[\13-¤]*$
+   RegKeyWords Color RED(\s+|^)(ON-ERROR|EXIT-ERROR)(?=\s|$)
+
+   RegKeyWords Color brown (\s|^)+[!-¤]*\{(?=\s|$),(\s|^)+\}[!-¤]*(?=\s|$)
+
+   RegKeywords Color yellow ^\s*[!-¤]*\:\s+[!-¤]+,^\s*\:NONAME(?=\s|$)
+   RegKeywords Color yellow (\s|^)+(CREATED|EXIT|DOES\>|S\:)(?=\s|$)
+
+   RegKeywords Color yellow (\s|^)+\;[!-¤]*(?=\s|$)
+   RegKeywords Color yellow ^\s*:>\s[!-¤]*,ALIAS\s+[!-¤]+\s+[!-¤]+
+   RegKeyWords Color yellow \-\-\s[!-¤]*
+   RegKeywords Color yellow (^|\s+)(CREATE|VECT|VARIABLE|VOCABULARY|fld)\s+[!-¤]*(?=\s|$)
+   RegKeywords Color yellow (^|\s+)(USER-VECT|USER-VALUE|USER|USER-CREATE)\s+[!-¤]*(?=\s|$)
+
+   RegKeywords Color yellow \s+(VALUE|CONSTANT)\s+[!-¤]*(?=\s|$)
+
+; слова с квадратными скобками
+   RegKeywords Color yellow (\s|^)+[!-¤]*\[(?=\s|$),(\s|^)+\][!-¤]*(?=\s|$)
+
+   RegKeywords Color yellow ^\s*WINAPI\:\s+[!-¤]+\s+,^\s*CODE\s+[!-¤]+,END\-CODE
+   RegKeywords Color yellow (\s+|^)path\:\s+[!-¤]+
+; работа с VECT и VALUE словами
+   RegKeywords Color LIGHTCYAN (\s+|^)(TO|IS|FROM|AT)\s+[!-¤]*(?=\s|$)
+   RegKeyWords Color lightcyan (\s+|^)\([!-¤]+\)(?=\s|$)
+
+  Macro 1
+    GoToX 0
+    InsLine
+    Print '\ '
+    InsertDate
+    Print ' ~mOleg'^M
+    Print '\ Сopyright [C] 2008 mOleg mininoleg@yahoo.com'^M
+    Print '\ ???'^M^M
+  EndMacro
+
+  Macro 2
+    GoToX 0
+    InsLine
+    Print ^M'\ '^M':  ( --> )'^M
+    Tab
+    Print ';'^M^E^E^S
+  EndMacro
+
+  Macro 3
+    Print 'BEGIN   WHILE'^M
+    Print 'REPEAT'^M^E^E^F^S
+  EndMacro
+
+END

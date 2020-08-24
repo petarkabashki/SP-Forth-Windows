@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ASCII"?>
+<forth xmlns="http://forth.org.ru/ForthML/">
+
+
+<def name="2+" ds=" addr -- ">  2 + </def>
+<def name="2-" ds=" addr -- "> -2 + </def>
+
+<def name="1+!" ds=" addr -- ">  1 SWAP +! </def>
+<def name="1-!" ds=" addr -- "> -1 SWAP +! </def>
+
+<def name="CELL+!" ds=" addr -- "> /CELL        SWAP +! </def>
+<def name="CELL-!" ds=" addr -- "> /CELL NEGATE SWAP +! </def>
+
+
+<def name="WITHIN" ds=" u ul uh -- t "><!-- ul <= u < uh -->
+  OVER - >R - R> ULT
+</def>
+
+<def name="(DIGIT)" ds=" c base -- u flag ">
+  >R <char>0</char> - 9 OVER LT <if> 7 - DUP 10 LT OR </if> DUP R> ULT
+</def>
+
+</forth>

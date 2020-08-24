@@ -1,0 +1,198 @@
+<?xml version="1.0" ?>
+<f:forth xmlns:f="http://forth.org.ru/ForthML/"
+  xmlns="http://forth.org.ru/ForthML/Rules/"
+xmlns:r="http://forth.org.ru/ForthML/Rules/"
+>
+<!-- Apr.2007 ruvim@forth.org.ru -->
+<!-- $Id: rules-std.f.xml,v 1.33 2008/10/08 23:29:06 ruv Exp $ -->
+
+
+<rule match="r:exec-attribute" ds=" i*x -- j*x ">
+  <postpone><f:slit>`name GetAttribute</f:slit> GetAttribute T-PLAIN </postpone>
+</rule>
+
+<rule match="r:next-match" ds=" i*x -- j*x "><!-- not obey to M -->
+  <postpone>
+    perform-rules-next <f:unless><direct><yield/></direct></f:unless>
+  </postpone>
+</rule>
+
+
+<rule match="f:xt"><!-- only within f:def or f:p -->
+  <m>
+  <f:lit> BFW, <f:p><yield/></f:p> RFW </f:lit>
+  </m>
+</rule>
+
+<rule match="f:defer-lit"><m>
+  <direct>DEFER-LIT, <yield/></direct>
+  </m>
+</rule>
+
+<rule match="f:ahead"><m>
+  <direct>BFW,</direct><yield/><direct>RFW</direct>
+  </m>
+</rule>
+
+<rule match="r:ahead"><m>
+  <direct>BFW, <yield/> RFW</direct>
+  </m>
+</rule>
+
+<rule match="r:m0">
+  M @ >R  M 0!  <yield/>  R> M !
+</rule>
+
+<rule match="r:mm"><!-- in addition to 'r:m' -->
+  <m>
+  <f:choose> STATE? <f:when>
+    <m0> INC-M <yield/> DEC-M </m0>
+  </f:when><f:otherwise>
+    <yield/>
+  </f:otherwise></f:choose>
+  </m>
+</rule>
+
+<f:def name="(yield-within-state)" ds=" state -- ">
+  STATE @ >R STATE ! trans-childs R> STATE !
+</f:def>
+
+<f:def name="yield," ds=" -- ">
+  STATE @ 0 EQ <f:if> -5006 THROW </f:if>
+  STATE @ 1 EQ <f:if><postpone> trans-childs </postpone><f:exit/></f:if>
+  <postpone><f:lit> STATE @ 1- </f:lit> (yield-within-state) </postpone>
+</f:def>
+
+<rule match="r:yield"><!-- because of r:mm -->
+  <!-- only within non-nested r:rule -->
+  yield,
+</rule>
+
+<f:cell name="q-s0"/>
+
+<f:def name="q-prol">
+  q-s0 @ >CS STATE0? q-s0 !
+  <f:choose> q-s0 @ <f:when>
+    CONCEIVE STATE 1+!
+  </f:when> M @ 0EQ <f:when>
+    <m><direct>BFW, CONCEIVE</direct></m>
+  </f:when><f:otherwise>
+    <f:lit>GERM</f:lit> EXEC,
+  </f:otherwise></f:choose>
+</f:def>
+
+<f:def name="q-epil">
+  <f:choose> q-s0 @ <f:when>
+    STATE 1-! BIRTH
+  </f:when> M @ 0EQ <f:when>
+    <m><direct>BIRTH RFW LIT,</direct></m>
+  </f:when><f:otherwise>
+    <f:lit>GERM</f:lit> EXEC,
+  </f:otherwise></f:choose>
+  CS> q-s0 !
+</f:def>
+
+<r:rule match="f:q" ds=" -- xt "><!-- 'quote', 'quotation' (seems better than 'xt') -->
+  <!-- not within of the r:mm when using the r:yield (!!!) -->
+  q-prol <r:yield/> q-epil
+</r:rule>
+
+
+<rule match="f:times"><mm>
+  <f:repeat> DUP <f:while/> >R <yield/> R> 1- </f:repeat> DROP
+  </mm>
+</rule>
+
+<rule match="f:d"><!-- dynamic binding (for native words only) -->
+  FirstChildValue
+  <f:repeat> WORD|TAIL 2>R DUP <f:while />
+    T-SLIT <m> &amp; EXECUTE </m>
+  2R>
+  </f:repeat>
+  2DROP RDROP RDROP
+</rule>
+
+<f:def name="t-child-slit">
+  cnode firstChild <f:choose> DUP <f:when> nodeValue T-SLIT </f:when> 0 T-2LIT </f:choose>
+</f:def>
+
+<rule match="f:emit">
+  t-child-slit <m>TYPE</m>
+</rule>
+
+<rule match="f:emit-line">
+  t-child-slit <m>TYPE CR</m>
+</rule>
+
+<rule match="f:let"><mm><!-- ( x addr - ) -->
+  DUP DUP @ 2>R !  <yield/>  R> R> !
+  </mm>
+</rule>
+
+<rule match="f:wid"><f:comment>anonymous wordlist, returns as wid </f:comment>
+<mm>
+  WORDLIST PUSH-DEVELOP <yield/> POP-DEVELOP
+</mm>
+</rule>
+
+<rule match="f:develop" ds=" -- "><mm>
+  <exec-attribute name="wordlist"/> PUSH-DEVELOP <yield/> DROP-DEVELOP
+  </mm>
+</rule>
+
+<rule match="f:definitions"><mm>
+  GET-CURRENT >CS  CONTEXT @ SET-CURRENT
+  <yield/>
+  CS> SET-CURRENT
+  </mm>
+</rule>
+
+<rule match="f:cell2">
+  <f:choose> cnode firstChild <f:when><yield/></f:when><m>0 0</m></f:choose>
+  <mm><get-name/> 2>CS ALIGN HERE 2 CELLS ALLOT DUP >CS 2! CS> <f:p><f:lit/></f:p> 2CS> NAMING- </mm>
+</rule>
+
+<rule match="f:const2"><m>
+  <get-name/> 2>CS <yield/> CONCEIVE 2LIT, BIRTH 2CS> NAMING-
+  </m>
+</rule>
+
+<rule match="f:space"><m>
+  <get-name/> 2>CS
+  <yield/> ALIGN HERE SWAP ALLOT CONCEIVE LIT, BIRTH
+  2CS> NAMING-
+  </m>
+</rule>
+
+
+
+<!-- r: -->
+
+<rule match="r:transform" ds=" -- ">
+  STATE0? <f:unless> -5011 THROW </f:unless>
+  <get-name/> 2>R
+  HERE 0 , DUP <f:p><f:lit/></f:p> 2R> NAMING-
+  chain-current <f:let> <yield/> </f:let>
+</rule>
+
+<rule match="r:mode" ds=" -- ">
+  STATE0? <f:unless> -5011 THROW </f:unless>
+  <exec-attribute name="transform"/>
+  DUP chain-context <f:let> chain-current <f:let>
+    <yield/>
+  </f:let></f:let>
+</rule>
+
+<rule match="r:extend" ds=" -- ">
+  STATE0? <f:unless> -5011 THROW </f:unless>
+  <exec-attribute name="transform"/><f:rem>( id )</f:rem>
+  chain-current <f:let> <yield/> </f:let>
+</rule>
+
+<rule match="r:import" ds=" -- ">
+  STATE0? <f:unless> -5011 THROW </f:unless>
+  <exec-attribute name="transform"/><f:rem>( id )</f:rem>
+  import-rules
+</rule>
+
+</f:forth>

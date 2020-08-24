@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ASCII"?>
+<forth xmlns="http://forth.org.ru/ForthML/"
+     xmlns:r="http://forth.org.ru/ForthML/Rules/"
+>
+
+<g xml:base="http://forth.org.ru/~pinka/model/">
+
+<include href="lib/string/slice.f.xml" />
+
+<r:transform name="transformer-xmlstruct">
+  <include href="trans/xml-struct.f.xml" />
+</r:transform>
+
+<r:import transform="transformer-xmlstruct"/>
+
+</g>
+
+<def name="(DIGIT)" ds=" c base -- u flag ">
+  DIGIT DUP <if><exit/></if> DUP
+</def>
+
+<def name="E-NATIVE-SURE" ds=" i*x a u -- j*x ">
+  forthml-hidden::I-NATIVE-FORCE <rem>( i*x xt )</rem>
+  EXECUTE
+</def>
+
+</forth>

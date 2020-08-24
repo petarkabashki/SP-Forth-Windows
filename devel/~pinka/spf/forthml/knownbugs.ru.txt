@@ -1,0 +1,32 @@
+\ 31.Aug.2007 file created
+
+
+ќпределенные локально пространства имен (xmlns) разрешимы только внутри элемента,
+  принадлежащего данному xmlns.
+
+  “.е., где бы ни был объ€влен префикс x, разрешаетс€ он только
+  в контексте узлов node()[ ancestor-or-self::x:* ]
+  (за разрешение отвечает функци€ namespace-uri-for-prefix)
+
+  »сключение составл€ют префиксы, объ€вленные в корневом элементе.
+
+  Ёто ограничение текущей версии libxml2
+  -- http://xmlsoft.org/namespaces.html
+
+
+
+  ѕример про€влени€ указанного недостатка:
+
+    <forth xmlns="http://forth.org.ru/ForthML/">
+
+    <g xmlns:fn="http://forth.org.ru/~pinka/my-functions">
+
+      <emit>Lib version is </emit>  fn:version . CR
+    
+    </g>
+    </forth>
+
+  при трансл€ции слова fn:version разрешить префикс fn будет невозможно.
+
+
+$Id: knownbugs.ru.txt,v 1.4 2008/06/28 16:11:50 ruv Exp $

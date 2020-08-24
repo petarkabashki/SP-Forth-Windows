@@ -1,0 +1,39 @@
+<?xml version="1.0" ?>
+<forth xmlns="http://forth.org.ru/ForthML/">
+
+<slot>  sock port ip last-accepted </slot>
+<slot2> interface-name port-name </slot2>
+
+<def name="(close-listen)" ds=" -- ">
+  <rem> closing FIRE-EVENT <!-- before --></rem>
+  sock  0 sock!  CloseSocket THROW
+</def>
+
+<def name="close-listen" ds=" -- ">
+  sock <unless><exit/></unless> (close-listen)
+</def>
+
+<def name="alive?" ds=" -- sock|0 ">
+  sock
+</def>
+
+<def name="open-listen" ds=" -- ">
+  close-listen
+  CreateSocket THROW sock!
+  sock ReuseAddrSocket THROW
+  port ip sock BindSocketInterface THROW
+  sock ListenSocket THROW
+  <rem> opening FIRE-EVENT <!-- after --></rem>
+</def>
+
+<def name="assume-listen" ds=" port-a port-u interface-a interface-u -- ">
+  interface-name! port-name!
+  interface-name <choose> DUP <when> GetHostIP THROW </when> NIP </choose> ip!
+  port-name StoN port!
+</def>
+
+<def name="accept-client" ds=" -- sock ">
+  sock AcceptSocket THROW DUP last-accepted!
+</def>
+
+</forth>

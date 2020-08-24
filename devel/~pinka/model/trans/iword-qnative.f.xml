@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ASCII" ?>
+<forth xmlns="http://forth.org.ru/ForthML/">
+<comment> Native words qualified by wordlists as wid1::wid2::word </comment>
+<!-- 2007 -->
+<!-- $Id: iword-qnative.f.xml,v 1.6 2008/12/22 00:19:38 ruv Exp $ -->
+
+<def name="(I-QNATIVE)" ds=" a u wid1 -- xt true | false ">
+  >R `:: SPLIT- <unless> R> SEARCH-WORDLIST <exit/></unless>
+  R> SEARCH-WORDLIST <unless> 2DROP FALSE <exit/></unless>
+  EXECUTE-BALANCED(+1)
+  <again/>
+</def>
+
+<def name="I-QNATIVE" ds=" c-addr u -- xt true | c-addr u false ">
+  2DUP `:: SPLIT- <unless> 2DROP FALSE <exit/></unless>
+  I-NATIVE   <unless> 2DROP 2DROP FALSE <exit/></unless>
+  EXECUTE-BALANCED(+1) <!-- ( c-addr u  a1 u1 wid ) -->
+  (I-QNATIVE) <unless> FALSE <exit/></unless>
+  NIP NIP TRUE
+</def>
+
+<def name="I-QUOTED-FORM" ds=" c-addr u -- xt true | c-addr u false ">
+<rem> 'DUP </rem>
+  DUP 2 CHARS ULT <if> FALSE <exit/></if>
+  `' MATCH-HEAD <unless> FALSE <exit/></unless>
+  I-NATIVE  <if> TRUE <exit/></if>
+  I-QNATIVE <if> TRUE <exit/></if>
+  1 CHARS TUCK + >R - R> FALSE
+</def>
+
+</forth>

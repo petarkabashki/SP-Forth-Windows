@@ -1,0 +1,35 @@
+<?xml version="1.0" ?>
+<f:forth xmlns:f="http://forth.org.ru/ForthML/"
+  xmlns="http://forth.org.ru/ForthML/Rules/"
+xmlns:r="http://forth.org.ru/ForthML/Rules/"
+>
+<!-- Apr.2007 -->
+<!-- $Id: rules-ext.f.xml,v 1.5 2008/02/18 22:55:23 ruv Exp $ -->
+
+<rule match="f:each-line" ds="c-addr u -- "><mm>
+  <!-- each line, include last without line-delimiter -->
+  <f:repeat>
+    SPLIT-LINE
+  <f:while/>
+    2>R <yield/> 2R>
+  </f:repeat> <f:choose> DUP <f:when> <yield/> </f:when> 2DROP </f:choose>
+  </mm>
+</rule>
+
+<rule match="f:each-textline" ds="c-addr u -- "><mm>
+  <!-- applys to nonempty lines only -->
+  <f:each-line>
+    <f:choose> DUP <f:when> <yield/> </f:when> 2DROP </f:choose>
+  </f:each-line>
+  </mm>
+</rule>
+
+<rule match="f:each-word" ds="c-addr u -- "><mm>
+  <f:repeat>
+    WORD|TAIL 2>R  DUP <f:while/> <yield/> 2R>
+  </f:repeat> 2DROP RDROP RDROP
+  </mm>
+</rule>
+
+
+</f:forth>

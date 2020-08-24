@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="ASCII"?>
+<forth xmlns="http://forth.org.ru/ForthML/"
+    xmlns:xi="http://forth.org.ru/ForthML/Struct/"
+>
+
+<g xml:base="trial/">
+
+<xi:model name="forthproc" href="#forthproc">
+  <include href="forthproc.f.xml"/>
+</xi:model>
+
+<xi:model name="strings" href="#strings">
+  <include href="strings.f.xml"/>
+</xi:model>
+
+<xi:model name="storage" href="#storage">
+  <include href="storage.f.xml"/>
+</xi:model>
+
+<xi:model name="codegen" href="#codegen">
+  <include href="codegen.f.xml"/>
+</xi:model>
+
+<xi:model name="host">
+  <include href="host-envir.f.xml"/>
+</xi:model>
+
+<xi:model name="interpreter" href="#interpreter">
+  <include href="interpreter.f.xml"/>
+</xi:model>
+
+<xi:model name="heap">
+  <include href="heap.f.xml"/>
+</xi:model>
+
+<xi:model name="files">
+  <include href="files.f.xml"/>
+</xi:model>
+
+</g>
+
+<xi:include href="#main"/>
+
+</forth>

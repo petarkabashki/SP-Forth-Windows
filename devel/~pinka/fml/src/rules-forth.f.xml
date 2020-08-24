@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="ASCII" ?>
+<f:forth
+  xmlns:f="http://forth.org.ru/ForthML/"
+  xmlns="http://forth.org.ru/ForthML/Rules/"
+>
+<!-- Feb.2007 -->
+
+<rule match="f:choose">    STATE? <f:if><exit-fail/></f:if>         <yield/>          </rule>
+<rule match="f:otherwise"> STATE? <f:if><exit-fail/></f:if>         <yield/>          </rule>
+<rule match="f:when">      STATE? <f:if><exit-fail/></f:if>   <f:if><yield/> ParentNode LastChild </f:if> </rule>
+<rule match="f:if">        STATE? <f:if><exit-fail/></f:if>   <f:if><yield/></f:if>   </rule>
+<rule match="f:unless">    STATE? <f:if><exit-fail/></f:if>  0EQ <f:if><yield/></f:if></rule>
+
+<rule match="f:repeat">    STATE? <f:if><exit-fail/></f:if>
+  FALSE >CS
+  <f:until> <yield/>  CS@ </f:until>
+  CSDROP
+</rule>
+
+<rule match="f:while">     STATE? <f:if><exit-fail/></f:if>
+  0= <f:if> ParentNode LastChild  CSDROP TRUE >CS</f:if>
+</rule>
+
+<rule match="f:until">     STATE? <f:if><exit-fail/></f:if>
+  FALSE >CS
+  <f:until> <yield/> CS@ OR </f:until>
+  CSDROP
+</rule>
+
+<!-- = = = = = -->
+
+<rule match="f:also">
+  `wordlist GetAttribute T-PLAIN <m> PUSH-SCOPE <yield/> DROP-SCOPE </m>
+</rule>
+
+<rule match="f:alias">
+  <get-name/> `word GetAttribute 
+  <f:choose> DUP <f:when> I-NATIVE-FORCE T-LIT </f:when> 2DROP <yield/></f:choose>
+  <m>NAMING</m>
+</rule>
+
+<rule match="f:include"><!-- xml:base aware -->
+  `href GetAttribute expanded-url T-SLIT <m>EMBODY</m>
+</rule>
+
+<rule match="f:xt-of">
+  `name GetAttribute I-NATIVE-FORCE T-LIT
+</rule>
+
+<rule match="f:char">
+  cnode firstChild DUP <f:if> nodeValue DUP <f:if> SWAP C@ </f:if> NIP </f:if> T-LIT
+</rule>
+
+<rule match="f:text">
+  cnode firstChild <f:choose> DUP <f:when> nodeValue T-SLIT </f:when> 0 T-2LIT </f:choose>
+</rule>
+
+<rule match="f:init">
+  <yield/>
+</rule>
+
+</f:forth>

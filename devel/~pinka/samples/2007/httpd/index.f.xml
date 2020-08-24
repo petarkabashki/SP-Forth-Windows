@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ASCII"?>
+<forth xmlns="http://forth.org.ru/ForthML/">
+
+
+<def name="load-worker" ds=" -- ">
+  <include href="worker.f.xml"/>
+</def>
+
+<wordlist name="tcp-server">
+  <include href="kernel.f.xml"/>
+</wordlist>
+
+<def name="r" ds=" -- "> tcp-server::restart </def>
+
+</forth>

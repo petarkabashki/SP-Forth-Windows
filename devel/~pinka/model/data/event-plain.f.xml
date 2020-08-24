@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<forth
+   xmlns="http://forth.org.ru/ForthML/"
+   xmlns:f="http://forth.org.ru/ForthML/"
+   xmlns:r="http://forth.org.ru/ForthML/Rules/"
+>
+
+<rem> included to forthml.L3
+<using href="http://forth.org.ru/~pinka/model/data/list-plain.f.xml"/>
+</rem>
+
+<def name="ALLOT-EVENT" ds=" -- chain ">
+  ALIGN HERE 0 , 0 ,
+</def>
+
+<comment>
+  for further: ATTACH-EVENT ( a1 u1 a2 u2 -- )
+</comment>
+
+<def name="ADVICE-EVENT-AFTER" ds=" xt chain -- ">
+  >R 0 , HERE SWAP , R> BIND-DNODE-TAIL
+</def>
+
+<def name="ADVICE-EVENT-BEFORE" ds=" xt chain -- ">
+  >R 0 , HERE SWAP , R> BIND-NODE
+</def>
+
+<def name="ADVICE-EVENT-LIKE" ds=" xt chain a u -- ">
+  `before EQUAL <if> ADVICE-EVENT-BEFORE <exit/></if>
+  ADVICE-EVENT-AFTER
+</def>
+
+<def name="FIRE-EVENT" ds=" chain -- ">
+  <xt-of name="EXECUTE"/> FOR-LIST-VALUE
+</def>
+
+<r:rule match="f:event" ds=" -- ">
+  <r:mm><r:get-name/><const name="{}"> ALLOT-EVENT </const></r:mm>
+</r:rule>
+
+<r:rule match="f:handler" ds=" -- ">
+  <r:m>
+    <q><r:yield/></q><r:exec-attribute name="event"/>
+    <r:get-attribute name="advice"/> ADVICE-EVENT-LIKE
+  </r:m>
+</r:rule>
+
+<r:rule match="f:fire" ds=" -- ">
+  <r:m><r:exec-attribute name="event"/> FIRE-EVENT </r:m>
+</r:rule>
+
+
+<!-- What about the f:handler instead of the f:bind?
+  see also:
+  XML Binding Language (XBL), http://www.w3.org/TR/xbl/#the-handler
+  Scalable Vector Graphics (SVG), http://www.w3.org/TR/SVGMobile12/script.html#HandlerElement
+  Remote Events for XML (REX), http://www.w3.org/TR/rex/#elem-event
+  An Events Syntax for XML, http://www.w3.org/TR/xml-events/#section-listener-element
+
+  ColdFusion XML format (using bind Element)
+    http://gisnet.cstx.gov/cfdocs/htmldocs/help.html?content=XMLForms_10.html
+
+  MSDN, Speech Server, bind Element
+    http://msdn2.microsoft.com/en-us/library/bb857583.aspx
+-->
+
+</forth>

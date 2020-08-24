@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="ASCII"?>
+<forth xmlns="http://forth.org.ru/ForthML/">
+
+<rem><bind-up>
+  socket-line.f.xml
+  next-line?
+  treat-request
+</bind-up></rem>
+
+<def name="read-request-line?" ds=" -- flag ">
+  next-line? <unless> FALSE <exit/></unless>
+  TEST-EOLN <unless><logS>TEST-EOLN</logS> `#414 STHROW </unless><!-- Request-URI Too Large -->
+  FINE-HEAD DUP <unless> 2DROP <again/></unless><!-- skip empty lines -->
+  store-request-line
+  http-ver-d AND 1 EQ <unless> `#505 STHROW </unless><!-- HTTP/1.1 only -->
+  TRUE
+</def>
+
+<def name="read-headers" ds=" -- ">
+  next-line? <unless><exit/></unless><!-- no more data -->
+  <text>&#xD;</text> MATCH-HEAD DROP <!-- workaround for "UNIX-LINES" -->
+  DUP <unless> 2DROP <exit/></unless><!-- end of header reached -->
+  TEST-EOLN <unless><logS>TEST-EOLN</logS> `#413 STHROW </unless><!-- line is too long -->
+  TEST-HEAD-WHITE <if><logS>TEST-HEAD-WHITE</logS> `#400 STHROW </if><!-- don't support a multiple lines value (see 4.2 Message Headers) -->
+  parse-header <unless><logS>parse-header</logS> `#400 STHROW </unless><!-- header name is not found, bad request -->
+  <again/>
+</def>
+
+<def name="accept-request?" ds=" -- flag ">
+  read-request-line? <unless> FALSE <exit/></unless>
+  read-headers  TRUE
+</def>
+
+<def name="allow-pipelining?" ds=" -- flag ">
+  FALSE <!-- not supported yet -->
+</def>
+
+<def name="connection-alive?" ds=" -- flag ">
+  sock <unless> FALSE <exit/></unless>
+  connection-close? 0EQ
+</def>
+
+<def name="log-error" ds=" code -- ">
+  DUP -2 EQ <if> DROP LAST-ERROR-MSG <logS>error -2</logS><exit/></if>
+  <logN>error, ior</logN>
+</def>
+
+<def name="treat-error" ds=" code -- ">
+  <choose>
+    DUP 10058 EQ <when>
+      <logN>WSAESHUTDOWN</logN> 0 sock! 0
+    </when>
+
+    DUP 10054 EQ <when>
+      <logN>WSAECONNRESET</logN> 0
+    </when>
+     
+  </choose>
+  DUP <unless> DROP <exit/></unless>
+  DUP log-error
+  <xt-of name="treat-error-lite"/> CATCH
+  DUP <logN>result, ior</logN>
+  ERROR <rem> if any </rem>
+</def>
+   
+<def name="treat-request-async" ds=" -- ">
+  <emit-line>treat-request-async -- to be provided</emit-line> ABORT
+</def>
+
+<def name="dispatch-request" ds=" -- ">
+  allow-pipelining?    <if> connection-close? <unless> has-content? <unless>
+  treat-request-async  <exit/></unless></unless></if>
+  treat-request
+
+  <!-- 8.1.2.2 Pipelining 
+    Clients SHOULD NOT pipeline requests using non-idempotent methods
+    or non-idempotent sequences of methods 
+  -->
+</def>
+
+<def name="(perform-dialog)" ds=" -- ">
+  <until> sock <while/>
+    accept-request?
+  <while/>
+    dispatch-request
+    connection-close?
+  </until>
+</def>
+
+<def name="perform-dialog" ds=" -- ">
+  <xt-of name="(perform-dialog)"/> CATCH treat-error
+</def>
+
+<def name="treat-client" ds=" sock -- ">
+  DUP <logN>begin dialog</logN>
+  assume-sock
+  perform-dialog
+  <log>end dialog</log>
+  close-socketline
+</def>
+
+</forth>

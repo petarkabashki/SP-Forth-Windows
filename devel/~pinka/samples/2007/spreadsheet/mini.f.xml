@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="../algo/horses/default.xsl"?>
+<forth xmlns="http://forth.org.ru/ForthML/">
+<!-- $Id: mini.f.xml,v 1.5 2008/12/01 16:54:03 ruv Exp $ -->
+
+<wordlist name="sscells-wl"/>
+
+<def name="i-sscell" ds=" a-name u-name -- xt true | a u false ">
+  sscells-wl RESOLVE-NAME
+</def>
+
+
+<cell name="_rows"/>
+<cell name="_cols"/>
+
+<def name="store-max" ds=" r c -- ">
+  _cols @ UMAX _cols !
+  _rows @ UMAX _rows !
+</def>
+
+
+<def name="calc-name" ds=" r c -- a u ">
+  HERE >R
+  <char>A</char> 1- + C, 0 (D.) S,
+  R> HERE OVER -
+</def>
+
+
+<def name="calc-value-by-rc" ds=" r c -- a u ">
+  calc-name i-sscell <if> EXECUTE <exit/></if> 2DROP 0.
+</def>
+
+<def name="eval-token" ds=" i*x a1 u1 -- j*x ">
+  i-sscell <if> EXECUTE 2DUP `# STARTS-WITH <if> STHROW </if> StoN <exit/></if>
+  SFIND    <if> EXECUTE <exit/></if>
+  StoN
+</def><!-- analogue of EVALUATE with custom NOTFOUND -->
+<def name="eval-formula" ds=" a1 u1 -- x ">
+  SP@ >R
+  <each-word> eval-token </each-word>
+  SP@ R> - >CELLS 1 NEQ <if> `#NaN STHROW </if>
+</def>
+
+<def name="calc-formula" ds=" a1 u1 -- a2 u2 ">
+  <xt-of name="eval-formula"/> SCATCH <if> 2NIP <exit/></if> NtoS
+</def>
+
+<def name="calc-value" ds=" a1 u1 -- a2 u2 ">
+  2DUP `' STARTS-WITH <if><exit/></if>
+  `= MATCH-HEAD  <if> calc-formula <exit/></if>
+  FINE-TAIL
+</def>
+
+
+<cell name="_row"/>
+<cell name="_col"/>
+
+<def name="build-sscell-current" ds=" a u -- ">
+  sscells-wl PUSH-DEVELOP
+    
+    HERE 0 ,
+    
+    _row @ _col @  2DUP store-max
+    calc-name
+
+    <def name="{}" ds=" -- a u">
+      <lit/> DUP @ <if>DROP `#circle <exit/></if>
+      1 SWAP <let>  <slit/> calc-value </let>
+    </def>
+
+  DROP-DEVELOP
+</def>
+
+<def name="?build-sscell-current" ds=" a u -- ">
+  FINE-HEAD
+  DUP <unless> 2DROP <exit/></unless>
+  build-sscell-current
+</def>
+
+<def name="td-delimiter" ds=" -- a u"><text>^</text></def>
+
+<def name="parse-row" ds=" a u -- ">
+  1 _col <let>
+  <repeat> td-delimiter SPLIT- <while/>
+    ?build-sscell-current  _col 1+!
+  </repeat> ?build-sscell-current
+  </let>
+</def>
+
+<def name="parse-table" ds=" a1 u1 -- ">
+  1 _row <let>
+  <each-line> parse-row _row 1+! </each-line>
+  </let>
+</def>
+
+<def name="print-table" ds=" -- ">
+  0 _rows @ <times> 1+
+  0 _cols @ <times> 1+
+    <g ds=" r c -- r c ">
+    2DUP calc-value-by-rc TYPE SPACE td-delimiter TYPE SPACE
+    </g>
+  </times> DROP CR
+  </times> DROP CR
+</def>
+
+<def name="calc-n-print-table" ds=" a1 u1 -- ">
+  parse-table
+  print-table
+</def>
+
+
+<text> -2 ^ =B1            ^ = 2 3 4 -- will be NaN
+        4 ^ = A1 A2 + 3 *  ^ =3  ^ = A1 0 /
+      =C3 ^ 'B             ^ =A3 ^
+</text> calc-n-print-table
+
+</forth>

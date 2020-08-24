@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="Windows-1251"?>
+<forth xmlns="http://forth.org.ru/ForthML/">
+
+<wordlist name="alist-fixed-hidden"><rem> alist is associative list </rem>
+
+<!-- aggregation -->
+<include href="data-space.f.xml" />
+<include href="wordlist-plain.static.f.xml" />
+
+<cell name="_size"> 20 1024 * </cell><!-- it is fixed -->
+
+<handler event="recovery">
+  0. DATASPACE!
+  reset-list
+</handler>
+
+<handler event="startup" ds=" -- ">
+  _size @ ALLOCATED DATASPACE!
+  reset-list
+</handler>
+
+<handler event="shutdown" ds=" -- ">
+  DATASPACE DROP FREE THROW
+  0. DATASPACE!
+  reset-list
+</handler>
+
+<handler event="cleanup" ds=" -- ">
+  CLEAR-DATASPACE reset-list
+</handler>
+
+<export>
+
+<def name="clear-alist" ds=" -- ">
+  CLEAR-DATASPACE reset-list
+</def>
+
+<def name="store-pair" ds=" a1 u1 a-key u-key -- ">
+  2 PICK OVER + 10 CELLS + UNUSED ULT <unless> -8 THROW </unless>
+  2>R ALIGN HERE >R SXZ, R> 2R> relate
+</def>
+
+<def name="obtain-value" ds=" a-key u-key -- a2 u1 ">
+  find <if> XCOUNT <exit/></if> 2DROP 0.
+</def>
+
+<def name="enum-alist" ds=" xt -- "><rem> xt ( a1 u1 a-name u-name -- ) </rem>
+  >R _list @
+  <repeat> DUP <while/>
+    DUP >R @ XCOUNT 2R@ NODE-NAME ROT EXECUTE R> CDR
+  </repeat> RDROP DROP
+</def>
+
+<def name="dump-alist-text" ds=" -- ">
+  <q> TYPE <emit>:&#9;</emit> TYPE CR </q> enum-alist
+</def>
+
+</export>
+</wordlist>
+
+</forth>

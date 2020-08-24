@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="Windows-1251"?>
+<forth xmlns="http://forth.org.ru/ForthML/">
+
+<g xml:base="http://forth.org.ru/~pinka/model/">
+
+<include href="data/events-common.f.xml" />
+
+                                     GET-CURRENT
+<wordlist name="http-worker-hidden"><const name="my-wid"/>
+
+<include href="io/socket-line.f.xml" />
+
+<g xml:base="protocol/http/">
+<include href="headers-storage.f.xml" />
+<include href="headers-main.f.xml" />
+</g>
+
+<export>
+
+<def name="put" ds=" a u -- ">
+  sock <if> DUP <if> write <exit/></if></if> TYPE
+</def>
+
+<g><rem> interface </rem><text>
+
+next-line?     readout        read-exact     readout-exact
+close-socketline              assume-sock    sock
+h@             dump-headers   has-header
+http-ver-d     http-ver-major
+content-length has-content?   connection-close?
+location       http-method    is-http-method
+content-length-number
+
+</text><each-word><alias name="{2DUP}"> &amp; </alias></each-word></g>
+
+<rem> todo: read* должны мочь прочитать не более, чем content-lenght </rem>
+
+</export>
+
+<def name="treat-request" ds=" -- ">
+  location::url put
+  <text> -- test passed &#xD;&#xA;</text> put
+</def>
+
+<def name="treat-error-lite" ds=" ior -- ">
+  DROP
+  sock <if><text>error occured</text> write </if>
+</def>
+
+<include href="protocol/http/treat-client.f.xml" />
+
+<export>
+
+<def name="quit" ds=" -- ">
+  startup FIRE-EVENT  my-wid PUSH-SCOPE
+  my-wid <logN>worker started</logN>
+  <repeat> get-client? <while/> treat-client </repeat>
+  my-wid <logN>worker finished</logN>
+  shutdown FIRE-EVENT
+  dec-workers
+</def>
+
+<def name="start" ds=" -- ">
+  <xt-of name="quit"/> LAUNCH
+</def>
+
+</export>
+</wordlist>
+</g><!-- xml:base -->
+
+</forth>

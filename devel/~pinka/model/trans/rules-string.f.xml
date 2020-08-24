@@ -1,0 +1,58 @@
+<?xml version="1.0" ?>
+<f:forth xmlns:f="http://forth.org.ru/ForthML/"
+  xmlns="http://forth.org.ru/ForthML/Rules/"
+xmlns:r="http://forth.org.ru/ForthML/Rules/"
+>
+<!-- Aug.2007 -->
+<!-- $Id: rules-string.f.xml,v 1.6 2008/02/23 20:56:01 ruv Exp $ -->
+
+<f:also wordlist="forthml-hidden">
+
+<rule match="r:yield">
+  `transform HasAttribute <f:unless><exit-fail/></f:unless>
+  `transform GetAttribute &amp;
+  <postpone><f:exec/>
+    chain-context @ >R chain-context !
+    <direct> yield, </direct>
+    R> chain-context !
+  </postpone>
+</rule>
+
+<f:comment> String constructing (to the current storage) </f:comment>
+
+<transform name="rules-string-constructing">
+
+<rule match="#text">
+  NodeValue T-SLIT <m> S, </m>
+</rule>
+
+<rule match="f:ss"><f:rem> substitute substring </f:rem>
+  <yield transform="rules-default"/>
+  <m> S, </m>
+</rule>
+
+</transform>
+
+<rule match="f:s" ds=" -- addr u ">
+  <mm>
+    HERE >R
+    <yield transform="rules-string-constructing"/>
+    HERE R> TUCK - 0 C,
+  </mm>
+</rule>
+
+
+</f:also>
+
+<f:comment><!-- example -->
+<g xmlns="http://forth.org.ru/ForthML/">
+  <def name="ttt" ds=" a u -- a2 u2 ">
+    <s>AAA[<ss/>]Z-<ss> 123. (D.) </ss></s>
+  </def>
+
+  `ooo ttt TYPE CR <!-- output: AAA[ooo]Z-123 -->
+  `qqq <s>AAA[<ss/>]Z-<ss> 123. (D.) </ss></s> TYPE CR <!-- output: AAA[qqq]Z-123 -->
+</g>
+</f:comment>
+
+</f:forth>

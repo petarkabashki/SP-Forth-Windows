@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="Windows-1251"?>
+<forth xmlns="http://forth.org.ru/ForthML/"
+  xmlns:r="http://forth.org.ru/ForthML/Rules/"
+>
+<!-- Jul.2007 -->
+
+<wordlist name="urimap-hidden">
+
+<def name="compose-uri" ds=" a-rest u-rest  a-base u-base -- a-uri u-uri ">
+  concat-in-document-
+</def>
+
+<include href="../data/code-list.f.xml"/>
+
+
+<def name="default-map" ds=" a u -- a1 u1 flag ">
+  `http://forth.org.ru/~ MATCH-HEAD <if> `devel/~ compose-uri FIND-FULLNAME TRUE <exit/></if>
+  FALSE
+</def>
+
+<export>
+
+<def name="add-uri-map" ds="a-src u-src a-trg u-trg -- ">
+  2SWAP
+  <p> <slit/> MATCH-HEAD <if> <slit/> compose-uri TRUE <exit/></if> FALSE </p>
+  advice-before
+</def>
+
+<def name="resolve-uri-map" ds=" a u -- a1 u1 ">
+  perform-chain DROP
+</def>
+
+<def name="reset-uri-map" ds=" -- ">
+  <xt-of name="default-map"/> handle !
+</def>
+
+<init>
+  reset-uri-map <!-- (!!!) -->
+</init>
+
+<r:rule match="system-uri-map"><r:mm>
+  <r:get-attribute name="base"/>
+  <r:get-attribute name="target"/>
+  add-uri-map
+</r:mm>
+</r:rule>
+
+<!-- example:
+  <system-uri-map base="local://my1/" target="c:/work/2007/my1/" />
+-->
+
+<init>
+  <xt-of name="resolve-uri-map"/> _translate-uri !
+</init>
+
+</export></wordlist>
+
+</forth>

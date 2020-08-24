@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="ASCII"?>
+<forth xmlns="http://forth.org.ru/ForthML/">
+
+<!-- 2006-2007 ruvim@forth.org.ru -->
+
+<def name="&amp;" ds=" addr u -- xt ">
+  I-NATIVE <if><exit/></if> -321 THROW
+</def>
+
+<def name="SEARCH-WORDLIST" ds=" addr u wid -- xt true | false ">
+  FIND-WORDLIST DUP <if><exit/></if> NIP NIP
+</def>
+
+<def name="NAMING-" ds=" xt c-addr u -- ">
+  CURRENT @ @ CDR-BY-NAME <if> 2DUP TYPE <text> isn't unique</text> TYPE CR </if>
+  CURRENT @ RELATE-WORDLIST
+</def>
+
+<def name="NAMING" ds=" c-addr u xt -- ">
+  -ROT NAMING-
+</def>
+
+<def name="GET-CURRENT" ds=" -- wid ">  CURRENT @  </def>
+<def name="SET-CURRENT" ds=" wid -- ">  CURRENT !  </def>
+
+
+<cell name="VOC-LIST" />
+
+<def name="WORDLIST" ds=" -- wid ">
+  ALIGN 0 , HERE VOC-LIST BIND-NODE
+  HERE 0 , 0 , <rem> list | cname-addr </rem>
+</def>
+
+<def name="(WORDLIST-NAME!)" ds=" c-addr wid -- ">
+  CELL+ !
+</def>
+
+<def name="WORDLIST-NAME" ds=" wid -- addr u ">
+  CELL+ @ DUP <unless> 0 <!-- UNNAMED --><exit/></unless> COUNT
+</def>
+
+
+<def name="NAMING-WORDLIST" ds=" addr u wid -- ">
+  ALIGN HERE SWAP (WORDLIST-NAME!) SCZ,
+</def>
+
+<def name="NAMING-WORDLIST-" ds=" wid addr u -- ">
+  ROT NAMING-WORDLIST
+</def>
+
+<def name="WORDLIST-NAMED" ds=" addr u -- wid ">
+  2DUP WORDLIST  DUP >R  
+  MAKE-CONST NAMING  R@ NAMING-WORDLIST  R>
+</def>
+
+<def name="VOC-NAME." ds=" wid -- ">
+  DUP <unless> DROP <text>[NULL] </text> TYPE <exit/></unless>
+  DUP WORDLIST-NAME DUP <if> TYPE SPACE DROP <exit/></if> 2DROP
+  `# TYPE U.
+</def>
+
+<def name="(ORDER-HELPER)" ds=" n1 x -- x n2 0 ">
+  SWAP 1+ FALSE
+</def>
+
+<def name="ORDER" ds=" -- ">
+  <text>Context>: </text> TYPE
+  0 <xt-of name="(ORDER-HELPER)"/> SCAN-SCOPE-WITH DROP <rem>( i*x i )</rem>
+  <repeat> DUP <while/> 1- SWAP VOC-NAME. </repeat> DROP CR
+  <text>Current: </text> TYPE GET-CURRENT VOC-NAME. CR
+</def>
+
+<def name="WORDS" ds=" -- ">
+  SCOPE-TOP DUP <if> NLIST <exit/></if> DROP
+</def>
+
+<def name="VOCS" ds=" -- ">
+  VOC-LIST @
+  <repeat> DUP <while/> DUP VOC-NAME. CDR </repeat> DROP
+</def>
+
+</forth>

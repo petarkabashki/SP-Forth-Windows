@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="ASCII" ?>
+<forth xmlns="http://forth.org.ru/ForthML/">
+<!-- Feb.2007 ruvim@forth.org.ru -->
+
+<include href="../data/chain-cond.f.xml"/>
+
+<cell name="rules-default"/> 
+<init> rules-default DUP chain-current ! chain-context ! </init>
+
+<def name="advice-rule-after" ds=" xt -- ">
+  advice-after
+</def>
+<def name="advice-rule-before" ds=" xt -- ">
+  advice-before
+</def>
+<def name="trans-node-force" ds=" i*x -- i*x | j*x">
+  perform-chain <if><exit/></if> -5321 THROW
+</def>
+
+<def name="perform-rules" ds=" i*x h-rules -- j*x flag ">
+  perform-chain-explicit
+</def>
+<def name="perform-rules-next" ds=" i*x -- j*x flag ">
+  perform-chain-next
+</def>
+<def name="import-rules" ds=" h-rules -- ">
+  <p><lit/> perform-rules </p> advice-rule-before
+</def>
+
+<const name="_cs_txml"> ALIGN HERE MAKE-CS, </const>
+
+<cell name="_translate-uri"><xt-of name="NOOP"/></cell>
+
+<def name="translate-uri" ds=" d-uri1 -- d-uri2 "> _translate-uri @ EXECUTE </def>
+
+<include href="document-context2.f.xml"/>
+
+<include href="txml.immutable.f.xml"/>
+
+</forth>

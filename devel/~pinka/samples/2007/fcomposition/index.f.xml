@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="ASCII"?>
+<forth xmlns="http://forth.org.ru/ForthML/"
+     xmlns:f="http://forth.org.ru/ForthML/"
+     xmlns:r="http://forth.org.ru/ForthML/Rules/"
+    xmlns:tc="http://forth.org.ru/ForthML/TC/"
+    xmlns:xi="http://forth.org.ru/ForthML/Struct/"
+>
+
+<xi:model name="tc-guard" href="tc-guard-w.f.xml"/>
+
+<include href="tc-host.f.xml"/>
+
+<develop wordlist="TC-WL">
+  <init>
+  300 1024 * ALLOCATED DATASPACE!
+  300 1024 * ALLOCATED CODESPACE!
+  500 CELLS  ALLOCATED ASSUME-CS
+   32 CELLS  ALLOCATED ASSUME-SCOPE
+    2 1024 * ALLOCATED ASSUME-PAD
+  DECIMAL  DOS-LINES
+
+  WORDLIST DUP `FORTH-WL NAMING-WORDLIST- DUP PUSH-SCOPE  DUP SET-CURRENT
+  DUP MAKE-CONST `FORTH-WL NAMING-
+  <!-- we can't use WORDLIST-NAMED since there no current wordlist in that moment -->
+  </init><rem>( wid )</rem>
+  <const name="target-root"/>
+
+  <def name="give-forth" ds=" -- ">
+    GET-CURRENT target-root APPEND-WORDLIST
+  </def>
+  <alias name="hcall" word="E-NATIVE-SURE"/>  
+
+  <r:extend transform="transformer-fml" >
+    <include href="import-words.f.xml"/>
+    <r:rule match="tc:give-forth"> give-forth </r:rule>
+
+    <also wordlist="translater-plain">
+      <r:rule match="f:init"> state-init 1+! <r:yield/> state-init 1-! </r:rule>
+    </also>
+  </r:extend>
+</develop>
+
+
+<text>fix-inlines.f</text> Included
+
+
+<r:mode transform="TC-WL::transformer-fml">
+
+  <tc:import from="TC-WL">
+    hcall
+    NEXT-LINE-STDIN OK ?STACK
+  </tc:import>
+
+  <include href="carcase.f.xml"/>
+  <include href="quit.f.xml"/>
+
+  <init><rem> initiate the target system </rem>
+    <rem> The host system and the target system are has a same code form! So we can execute a words from the target system.</rem>
+    
+    `TC-WL::VOC-LIST       hcall    @ VOC-LIST !
+    `TC-WL::SAVE-STORAGE   hcall    RESTORE-STORAGE
+ 
+    500 CELLS ALLOCATED ASSUME-CS
+     32 CELLS ALLOCATED ASSUME-SCOPE
+    2 1024 *  ALLOCATED ASSUME-PAD
+    DECIMAL DOS-LINES
+    FORTH-WL DUP SET-CURRENT PUSH-SCOPE
+  </init>
+</r:mode>
+
+</forth>

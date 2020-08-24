@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="Windows-1251"?>
+<forth xmlns="http://forth.org.ru/ForthML/">
+
+<wordlist name="headers-hidden">
+
+<include href="http://forth.org.ru/~pinka/model/data/alist-fixed.f.xml" />
+
+<export>
+
+<def name="h@" ds=" a u -- a2 u2 ">
+  obtain-value
+</def>
+
+<def name="h!" ds=" a1 u1 a2 u2 -- ">
+  store-pair
+</def>
+
+<def name="h!@" ds=" a1 u1 a2 u2 -- a u1 ">
+  2DUP 2>R store-pair 2R> obtain-value
+</def>
+
+<def name="clear-headers" ds=" -- ">
+  clear-alist
+</def>
+
+<def name="dump-headers" ds=" -- ">
+  dump-alist-text
+</def>
+
+</export>
+</wordlist>
+
+<rem><!-- to be removed -->
+<def name="store-header?" ds=" a u -- flag ">
+  `: SPLIT <unless> 2DROP FALSE <exit/></unless> FINE-HEAD 2SWAP h! TRUE
+</def>
+
+<def name="store-header" ds=" a u -- ">
+  store-header? DROP
+</def>
+</rem>
+
+<def name="parse-header" ds=" a u -- a u false | true ">
+  `: SPLIT DUP <unless><exit/></unless> DROP FINE-HEAD 2SWAP h! TRUE
+</def>
+
+<def name="has-header" ds=" a u -- flag ">
+  h@ DROP 0NEQ
+</def>
+
+</forth>

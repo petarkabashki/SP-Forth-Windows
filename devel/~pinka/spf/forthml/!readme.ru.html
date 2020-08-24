@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>ForthML / Limitations in the implementation</title>
+<meta http-equiv="Content-Type" content="text/html; charset=Windows-1251" />
+<style type="text/css">
+body { font-size: 110%; max-width: 33em; padding-left: 1em;}
+li { margin: 1em;}
+h2 { margin-top: 2em; }
+
+ol { counter-reset: item; }
+li { display: block; }
+li:before { content: counter(item) ") "; counter-increment: item; }
+</style>
+</head>
+<body>
+
+<div><h2>Особенности и ограничения</h2>
+<p>Некоторые ограничения принципиальны, 
+большинство же характерны лишь для текущей реализации или текущей версии.</p>
+
+<ol><li>
+Транслятор ForthML не различает признак немедленности слов (<small>IMMEDIATE</small>),
+не дает контекста для заглядывания вперед и доступа к входному потоку 
+(таким словам как <code>PARSE-NAME SOURCE REFILL</code> и т.п.).
+Тем не менее, фрагменты входного потока полностью доступны в контексте обработчиков элементов.
+
+</li><li>
+Как следствие предыдущего пункта, в контексте ForthML нельзя использовать классические слова
+управления потоком исполения (такие как <code>EXIT</code>, <code>IF</code>, 
+<code>THEN</code>, <code>RECURSE</code>, и тому подобные).
+Управление же потоком исполнения через стек возвратов остается доступным, т.к. 
+реализуется через обычные форт-слова.
+
+</li><li>
+Для работы необходимы библиотеки libxml2, iconv, zlib1, libcurl
+(см. <a href="../../../~ac/lib/lin/xml/xml.f">~ac/lib/lin/xml/xml.f</a>).
+Вообще же, базой выступает DOM-интрерфейс (см. <a href="../../lib/lin/xml/libxml2-dom.f">libxml2-dom.f</a>), 
+поэтому будет легко перейти и на нативную реализацию XML-парсера.
+
+</li><li>
+Нет валидации (что для форта характерно). 
+Так, например, элемент <code>while</code> должен иметь родителем
+лишь <code>repeat</code> или <code>until</code> — это нигде не проверяется.
+
+</li><li>
+Пока нету предупржедения при переименовании (слово <code>NAMING</code> проверки не делает).
+
+</li><li>
+Значением атрибутов <code>match</code> и <code>select</code>
+элементов <code>rule</code> и <code>for-each</code> является только 
+<a href="http://www.w3.org/TR/REC-xml-names/#ns-qualnames">QName</a>.
+
+</li><li>
+Нет элемента <code>else</code> — пользуйте <code>choose</code> (как в XSLT :).
+
+</li><li>
+Пока что элемент <code>exit</code> допустим не во всяком контексте. 
+Например, он недопустим внутри <code>times</code>. 
+Поддержка реализуема аналогично <code>uAddDepth</code> в <a href="../../../../lib/ext/locals.f">locals.f</a>.
+
+</li><li>
+Множество других, здесь не упомянутых.
+
+</li></ol>
+
+</div>
+
+<br />
+<hr />
+<code> $Id: !readme.ru.html,v 1.5 2008/10/08 21:59:16 ruv Exp $ </code>
+</body>
+</html>
